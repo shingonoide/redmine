@@ -277,6 +277,16 @@ class User < ActiveRecord::Base
     end
   end
   
+  def never_notify?
+    self.pref[:never_notify] == true
+  end
+
+  def never_notify=(notify)
+    self.pref[:never_notify] = notify
+    self.pref.save!
+    self.pref[:never_notify]
+  end
+
   def self.current=(user)
     @current_user = user
   end

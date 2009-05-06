@@ -18,7 +18,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class UserTest < Test::Unit::TestCase
-  fixtures :users, :members, :projects
+  fixtures :users, :members, :projects, :issues, :user_preferences
 
   def setup
     @admin = User.find(1)
@@ -164,6 +164,17 @@ class UserTest < Test::Unit::TestCase
     assert !@jsmith.projects.first.recipients.include?(@jsmith.mail)
   end
   
+  def test_mail_notification_never
+    assert Issue.first.recipients.include?(@jsmith.mail)
+    @jsmith.mail_notification = false
+    @jsmith.notified_project_ids = []
+    @jsmith.never_notify = true
+    @jsmith.save
+    @jsmith.reload
+    assert @jsmith.preference[:never_notify] == true
+    assert !Issue.first.recipients.include?(@jsmith.mail)
+  end
+
   def test_comments_sorting_preference
     assert !@jsmith.wants_comments_in_reverse_order?
     @jsmith.pref.comments_sorting = 'asc'

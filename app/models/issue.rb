@@ -214,8 +214,8 @@ class Issue < ActiveRecord::Base
   def recipients
     recipients = project.recipients
     # Author and assignee are always notified unless they have been locked
-    recipients << author.mail if author && author.active?
-    recipients << assigned_to.mail if assigned_to && assigned_to.active?
+    recipients << author.mail if author && author.active? && !author.never_notify?
+    recipients << assigned_to.mail if assigned_to && assigned_to.active? && !assigned_to.never_notify?
     recipients.compact.uniq
   end
   

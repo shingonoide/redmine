@@ -54,7 +54,7 @@ module Redmine
         
         # Returns an array of watchers' email addresses
         def watcher_recipients
-          self.watchers.collect { |w| w.user.mail if w.user.active? }.compact
+          self.watchers.collect { |w| w.user.mail if w.user.active? && !w.user.never_notify? }.compact
         end
 
         module ClassMethods

@@ -59,6 +59,11 @@ class WatcherTest < Test::Unit::TestCase
     @user.save    
     @issue.reload
     assert @issue.watcher_recipients.include?(@user.mail)
+
+    @user.never_notify = true
+    @user.save
+    @issue.reload
+    assert !@issue.watcher_recipients.include?(@user.mail)
   end
   
   def test_unwatch

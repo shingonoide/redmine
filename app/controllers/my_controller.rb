@@ -58,6 +58,7 @@ class MyController < ApplicationController
       @user.mail_notification = (params[:notification_option] == 'all')
       @user.pref.attributes = params[:pref]
       @user.pref[:no_self_notified] = (params[:no_self_notified] == '1')
+      @user.never_notify = (params[:notification_option] == 'never')
       if @user.save
         @user.pref.save
         @user.notified_project_ids = (params[:notification_option] == 'selected' ? params[:notified_project_ids] : [])
@@ -68,11 +69,13 @@ class MyController < ApplicationController
       end
     end
     @notification_options = [[l(:label_user_mail_option_all), 'all'],
-                             [l(:label_user_mail_option_none), 'none']]
+                             [l(:label_user_mail_option_none), 'none'],
+                             [l(:label_user_mail_option_never), 'never']]
     # Only users that belong to more than 1 project can select projects for which they are notified
     # Note that @user.membership.size would fail since AR ignores :include association option when doing a count
     @notification_options.insert 1, [l(:label_user_mail_option_selected), 'selected'] if @user.memberships.length > 1
-    @notification_option = @user.mail_notification? ? 'all' : (@user.notified_projects_ids.empty? ? 'none' : 'selected')    
+    @notification_option = @user.mail_notification? ? 'all' : (@user.notified_projects_ids.empty? ? 'none' : 'selected')
+    @notification_option = 'never' if @user.never_notify?
   end
 
   # Manage user's password
